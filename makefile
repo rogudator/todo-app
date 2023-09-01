@@ -1,8 +1,11 @@
-local:
-	docker run --net todo-network -p 6094:6093 todo-app
+include .env
+export
 
-db:
-	docker run --name todo-db -e POSTGRES_PASSWORD='qwerty' -p 5436:5432 --net todo-network -d --rm postgres
+local:
+	go run cmd/main.go
+
+local_db:
+	docker run --name ${DB_NAME} -e POSTGRES_PASSWORD='${DB_PASSWORD}' -p ${DB_PORT}:5432 -d --rm postgres
 	
-migrate:
-	migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5436/postgres?sslmode=disable' up
+local_migrate:
+	migrate -path ./schema -database 'postgres://${DB_NAME}:${DB_PASSWORD}@localhost:${DB_PORT}/postgres?sslmode=${DB_SSLMODE}' up
