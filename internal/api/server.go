@@ -1,4 +1,4 @@
-package todo
+package api
 
 import (
 	"context"
@@ -19,7 +19,6 @@ func (s *Server) Run(port string, handler http.Handler) error {
 		WriteTimeout:   10 * time.Second,
 	}
 
-	// Shouldn't i move the & to return instead of initialisation?
 	return s.httpServer.ListenAndServe()
 }
 

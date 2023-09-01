@@ -1,8 +1,8 @@
-package handler
+package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rogudator/todo-app/pkg/service"
+	"github.com/rogudator/todo-app/internal/service"
 
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/files"

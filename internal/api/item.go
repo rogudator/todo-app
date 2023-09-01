@@ -1,11 +1,11 @@
-package handler
+package api
 
 import (
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rogudator/todo-app"
+	"github.com/rogudator/todo-app/entity"
 )
 
 func (h *Handler) createItem(c *gin.Context) {
@@ -21,7 +21,7 @@ func (h *Handler) createItem(c *gin.Context) {
 		return
 	}
 
-	var input todo.TodoItem
+	var input entity.TodoItem
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -92,7 +92,7 @@ func (h *Handler) updateItem(c *gin.Context) {
 		return
 	}
 
-	var input todo.UpdateItemInput
+	var input entity.UpdateItemInput
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 	}

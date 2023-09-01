@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/rogudator/todo-app"
-	"github.com/rogudator/todo-app/pkg/repository"
+	"github.com/rogudator/todo-app/entity"
+	"github.com/rogudator/todo-app/internal/repository"
 )
 
 const (
@@ -16,6 +16,12 @@ const (
 	signingKey = "hsdakfBRH3R7fg2365rFR"
 	tokenTTL = 12 * time.Hour
 )
+
+type Authorization interface {
+	CreateUser(user entity.User) (int, error)
+	GenerateToken(username, password string) (string, error)
+	ParseToken(token string) (int, error)
+}
 
 type tokenClaims struct {
 	jwt.StandardClaims
@@ -30,7 +36,7 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateUser(user todo.User) (int, error) {
+func (s *AuthService) CreateUser(user entity.User) (int, error) {
 	user.Password = generatePasswordHash(user.Password)
 	return s.repo.CreateUser(user)
 }

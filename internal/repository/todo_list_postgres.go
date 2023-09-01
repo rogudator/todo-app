@@ -5,9 +5,17 @@ import (
 	"strings"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/rogudator/todo-app"
+	"github.com/rogudator/todo-app/entity"
 	"github.com/sirupsen/logrus"
 )
+
+type TodoList interface {
+	Create(userId int, list entity.TodoList) (int, error)
+	GetAll(userId int) ([]entity.TodoList, error)
+	GetById(userId, listId int) (entity.TodoList, error)
+	Delete(userId, listId int) error
+	Update(userId, listId int, input entity.UpdateListInput) error
+}
 
 type TodoListPostgres struct {
 	db *sqlx.DB
@@ -17,7 +25,7 @@ func NewTodoListPostgres(db *sqlx.DB) *TodoListPostgres {
 	return &TodoListPostgres{db: db}
 }
 
-func (r *TodoListPostgres) Create(userId int, list todo.TodoList) (int, error) {
+func (r *TodoListPostgres) Create(userId int, list entity.TodoList) (int, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return 0, err
@@ -42,8 +50,8 @@ func (r *TodoListPostgres) Create(userId int, list todo.TodoList) (int, error) {
 
 }
 
-func (r *TodoListPostgres) GetAll(userId int) ([]todo.TodoList, error) {
-	var lists []todo.TodoList
+func (r *TodoListPostgres) GetAll(userId int) ([]entity.TodoList, error) {
+	var lists []entity.TodoList
 
 	query := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1", todoListsTable, usersListsTable)
 	err := r.db.Select(&lists, query, userId)
@@ -51,8 +59,8 @@ func (r *TodoListPostgres) GetAll(userId int) ([]todo.TodoList, error) {
 	return lists, err
 }
 
-func (r *TodoListPostgres) GetById(userId, listId int) (todo.TodoList, error) {
-	var list todo.TodoList
+func (r *TodoListPostgres) GetById(userId, listId int) (entity.TodoList, error) {
+	var list entity.TodoList
 
 	query := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2", todoListsTable, usersListsTable)
 	err := r.db.Get(&list, query, userId, listId)
@@ -67,7 +75,7 @@ func (r *TodoListPostgres) Delete(userId, listId int) error {
 	return err
 }
 
-func (r *TodoListPostgres) Update(userId, listId int, input todo.UpdateListInput) error {
+func (r *TodoListPostgres) Update(userId, listId int, input entity.UpdateListInput) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1

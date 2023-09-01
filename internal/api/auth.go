@@ -1,10 +1,10 @@
-package handler
+package api
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rogudator/todo-app"
+	"github.com/rogudator/todo-app/entity"
 )
 
 // @Summary SignUp
@@ -20,7 +20,7 @@ import (
 // @Failure default {object} errorResponse
 // @Router /auth/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
-	var input todo.User
+	var input entity.User
 
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
